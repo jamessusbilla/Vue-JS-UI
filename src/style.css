@@ -1,0 +1,104 @@
+thead{
+    background-color: #3f87a6;
+    color: #fff;
+}
+
+tbody {
+    background-color: #e4f0f5;
+    width: 117.8em;
+    display:block;
+}
+
+table {
+    border-collapse: collapse;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: .8rem;
+    table-layout: fixed;
+    width:100%;
+    background-color: rgb(69,13,9);
+}
+
+
+th {
+    padding: 5px 10px;
+    width:16em;
+}
+
+
+body {
+    margin: 0;
+}
+
+#trip_records {
+    width: 117.8em;
+    display:block;
+}
+
+
+td{
+text-align: center;
+border: 0.0625em solid black;
+}
+
+input{
+	width:8em;
+}
+
+
+table th {
+  text-transform: uppercase;
+  text-align: left;
+  background: rgb(69, 13, 9);
+  color: #FFF;
+  padding: 0.5em;
+}
+
+th, td{
+    padding: 0em;
+    background-color: rgb(69,13,9);
+    text-align:center;
+
+}
+
+#menu{
+	width:26em;
+}
+
+
+#sortTrip, #sortLowTrip,#active,#deleteAll,#save,#reload{
+	width: 12em;
+}
+
+#trip_records th{
+	padding: 0.5em 18em;
+	width:24em;
+}
+
+#search{
+	width: 30em;
+}
+
+#space{
+	text-align: center;
+	display: flex;
+	justify-content: space-evenly;
+	background: rgb(69,13,9);
+}
+
+#space input{
+	width: 15em;
+	background-color: maroon;
+	color: white;
+	
+}
+
+#space input:hover{
+	background-color: white;
+	color: gold;
+	
+}
+
+#output td{
+    border: 0.0625em solid gold;
+}

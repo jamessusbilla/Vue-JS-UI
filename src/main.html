@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <title>Cyclist Trip Planner</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="cyclist.js"></script>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div>
+        <input value="Add" type="button" onclick="openTab('input')">
+        <input value="See Trips" type="button" onclick="openTab('trip_records')">
+    </div>
+
+    <section id="cyclist_planner_form">
+        <section id="input" style="display:none" class="trip">
+            <label for="tripName">Trip Name</label>
+            <input v-model="tripName" id="tripName" required></input>
+            <br/>
+            <label for="date">Date</label>
+            <input v-model="date" id="date" required></input>
+            <br/>
+            <label for="terrain">Terrain</label>
+            <input v-model="terrain" id="terrain" required></input>
+            <br/>
+            <label for="distance">Distance</label>
+            <input v-model="distance" id="distance" required></input>
+            <br/>
+            <label for="time">Time</label>
+            <input v-model="targetTime" id="time" required></input>
+            <br/>
+            <input id="planTrip" type="button" v-on:click="planTrip()" value="Add Trip" required></input>
+        </section>
+        <br/>
+        <br/>
+        <table>
+                <tr id="trip_records" class="trip">
+                    <th>Total Trip Distance: {{distanceSum()}}</th>
+					<br/>
+                    <th><input id="search" type="search" v-model="search" placeholder="Search" /></th>
+                </tr>
+				<tr id="space">
+		            <th>
+						<input id="sortTrip" type="button" v-on:click="sortTrip()" value="Sort by descending distance"></th>
+						<th><input id="sortLowTrip" type="button" v-on:click="sortLowTrip()" value="Sort by ascending distance"></th>
+						<th><input id="deleteAll" type="button" v-on:click="deleteAll()" value="Remove Completed Trips"></th>
+						<th><input id="save" type="button" value="Save Current Trips" v-on:click="save()"></th>
+						<th><input id="reload" type="button" value="Load Trips" v-on:click="unload()">
+					</th>
+				</tr>
+                <br/>
+                <tr>
+                    <th>Trip Name</th>
+                    <th>Date</th>
+                    <th>Terrain</th>
+                    <th>Distance</th>
+                    <th>target Time Finished</th>
+                    <th>Estimated Speed</th>
+					<th>Completed</th>
+                    <th>Backup/Restore</th>
+                    <th>Action</th>
+                </tr>
+                <tr v-if="data" id="output" v-for="item in filteredResources">
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.tripName"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.date"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.terrain"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.distance"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.targetTimeFinished"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.estimatedSpeed"></input></td>
+                    <td><input v-bind:href="item.id" target="_blank" v-model="item.done"></input></td>
+					<td><input v-bind:href="item.id" target="_blank" id="update" type="button" value="Backup" v-on:click="update(item.id)"></input>
+						<br/>
+						<input v-bind:href="item.id" target="_blank" id="discard" type="button" value="Discard Update" v-on:click="discard(item.id)">
+					</td>
+					<td>
+						<input v-bind:href="item.id" target="_blank" id="doneUpdate" type="button" value="Update" v-on:click="doneEditing(item.id,item.tripName, item.date, item.terrain, item.distance, item.targetTimeFinished,item.done)">
+						<br/>
+						<input v-bind:href="item.id" target="_blank" id="remove" type="button" value="Delete" v-on:click="remove(item.id)"></input>
+					</td>
+                </tr>
+        </table>
+    </section>
+    <script>
+        function openTab(sect) {
+          var section = document.getElementsByClassName('trip');
+          for (let j = 0; j < section.length; j++) {
+            section[j].style.display = "none";  
+          }
+          document.getElementById(sect).style.display = "block";  
+        }
+    </script>
+
+    <script>
+        // Controller
+        			var app = new Vue({
+        				el: '#cyclist_planner_form',
+        				data: {
+        					search: '',
+        					tripName: '',
+        					date: '',
+        					terrain: '',
+        					distance: '',
+        					targetTime: '',
+        					data: false,
+        					cycle: new Cyclist()
+        				},
+        				methods:{
+        					planTrip: function(){
+        						this.cycle.addTrip(this.tripName, this.date, this.terrain, this.distance, this.targetTime)
+        						this.data = true
+        						this.tripName = ''
+        						this.date = ''
+        						this.terrain = ''
+        						this.distance = ''
+        						this.targetTime = ''
+        					},
+        					sortTrip: function(){
+        						return this.cycle.sortHighestTrip()
+        					},
+							sortLowTrip: function(){
+								return this.cycle.sortLowestTrip()
+							},
+        					plannedTrip:function(){
+        						return this.cycle.getAllTrips()
+        					},
+        					Sum: function(){
+        						return this.cycle.getSum()
+        					},
+							deleteAll: function(){
+								return this.cycle.deleteDone()
+							},
+        					update: function(id){
+								const rowIndex = this.cycle.recorded_trip.findIndex(element => element.id == Number(id))
+								this.cycle.updateTripRecord(this.cycle.recorded_trip[rowIndex])
+        					},
+							doneEditing: function( id, tripName, date, terrain, distance, time, completion){
+								const rowIndex = this.cycle.recorded_trip.findIndex(element => element.id == Number(id))
+								this.cycle.recorded_trip[rowIndex].tripName = tripName
+								this.cycle.recorded_trip[rowIndex].date = date
+								this.cycle.recorded_trip[rowIndex].terrain = terrain
+								this.cycle.recorded_trip[rowIndex].targetTimeFinished = Number(time)
+								this.cycle.recorded_trip[rowIndex].distance = Number(distance)
+								this.cycle.recorded_trip[rowIndex].done = completion
+								this.cycle.endTripUpdate(this.cycle.recorded_trip[rowIndex])
+							},
+							discard: function(id){
+								const rowIndex = this.cycle.recorded_trip.findIndex(element => element.id == Number(id))
+								this.cycle.discardTripUpdate(this.cycle.recorded_trip[rowIndex])
+							},
+        					remove: function(m){
+        						this.cycle.removeTrip(m)
+        					},
+        					save: function(){
+        						this.cycle.saveTrip()
+        					},
+        					unload: function(){
+        						this.data = true
+        						return this.cycle.unloadTrip()
+        					},
+        					distanceSum: function(){
+        						return this.cycle.getDistanceSum()
+        					}
+        				},
+        				computed:{
+        					filteredResources (){
+        					  if(this.search){
+        						return this.cycle.findTrip(this.search)
+        
+        					  }
+        					  else{
+        						return this.cycle.recorded_trip;
+        					  }
+							}
+						}
+        			})
+    </script>
+</body>
+
+</html>
